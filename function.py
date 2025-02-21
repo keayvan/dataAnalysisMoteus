@@ -10,13 +10,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def func4d (x, coef):
-    a, b, c, d, e = coef[0], coef[1], coef[2], coef[3], coef[4]
-    return a*x*x*x*x+b*x*x*x + c*x*x + d*x+ e
+    a, b, c = coef[0], coef[1], coef[2]
+    return a*x*x*x*x+b*x*x*x + c*x*x 
 
 def func3d(x,coef):
-    a, b, c, d = coef[0], coef[1], coef[2], coef[3]
+    a, b, c = coef[0], coef[1], coef[2]
 
-    return a*x*x*x+b*x*x + c*x + d
+    return a*x*x*x+b*x*x + c*x 
 
 def func2d(x,coef):
     b, c, d = coef[0], coef[1], coef[2]
@@ -44,15 +44,15 @@ def boundary_curve(df_Arc_sorted, x_param,y_params,x_new, expan_factor,curveTofi
     from scipy.signal import argrelextrema
     from scipy.optimize import curve_fit
     if curveTofit == "3D":
-        def fit_func(x,a, b, c, d):
-            return a*x*x*x+b*x*x + c*x + d
+        def fit_func(x,a, b, c):
+            return a*x*x*x+b*x*x + c*x
     elif curveTofit == "exp":
         def fit_func(x, a, b):
             return a*np.exp(b*x)
         
     elif curveTofit == "4D":
-        def fit_func(x,a, b, c, d, e):
-            return a*x*x*x*x+b*x*x*x + c*x*x + d*x+ e
+        def fit_func(x,a, b, c):
+            return a*x*x*x*x+b*x*x*x +c*x*x
    
     
     bound_max_all_3D = []
@@ -75,7 +75,7 @@ def boundary_curve(df_Arc_sorted, x_param,y_params,x_new, expan_factor,curveTofi
         local_max = local_max + expansion_factor
 
         max_time = xAxis[local_max_indx]
-        params_max_3D, covariance_max_3D = curve_fit(fit_func, max_time, local_max)
+        params_max_3D, covariance_max_3D = curve_fit(fit_func, max_time, local_max, bounds=(0, np.inf))
         upper_bound_PWR_3D = fit_func(x_new, *params_max_3D)
         # upper_bound_PWR_3D, params_max_3D = fit_curve(x=max_time,
         #                                               y=local_max,
@@ -87,7 +87,7 @@ def boundary_curve(df_Arc_sorted, x_param,y_params,x_new, expan_factor,curveTofi
         local_min = local_min - expansion_factor
 
         min_time = xAxis[local_min_indx]
-        params_min_3D, covariance_min_3D = curve_fit(fit_func, min_time, local_min)
+        params_min_3D, covariance_min_3D = curve_fit(fit_func, min_time, local_min,  bounds=(0, np.inf))
         lower_bound_PWR_3D = fit_func(x_new, *params_min_3D)
         # lower_bound_PWR_3D, params_min_3D = fit_curve(x=min_time,
         #                                               y=local_min,

@@ -9,18 +9,30 @@ Created on Tue Feb 18 12:51:10 2025
 import pandas as pd
 import function
 from matplotlib import pyplot as plt
-def readArc_csv(filename, cols=None):
+def readArc_csv(filename, cols=None, test = 'flight'):
     fldr_path = "./data/ARC_Defence_data/"
 
     df = pd.read_csv(fldr_path+filename, skiprows=9)
-    df.columns = [
-        "Unknown0","Time_sms","VOLTAGE (V)", "CURRENT (A)", "SPEED Wrong","SPEED (rpm)",
-        "TEMPERATURE (C)", "Peak current", "Battery internal voltage",
-        "Main bus voltage", "Input request","POWER (W)",
-        "Unknown1", "Unknown2", "Unknown3", "Unknown4",
-        "Unknown5", "Unknown6", "Unknown7", "Unknown8",
-        "Unknown9", "Unknown10", "Unknown11", "Unknown12",
-        "Unknown13", "Pulse current"]
+    if test == 'flight':
+        df.columns = [
+            "Unknown0","Time_sms","VOLTAGE (V)", "CURRENT (A)","SPEED (rpm)",
+            "TEMPERATURE (C)", "BEC Voltage", "BEC Current",
+            "BEC Temperature", "Input request (%)","POWER (W)",
+            "Cruising", "Motor Temperature", "Battery Temperature", "Output power",
+            "Automatic regulation", "I*T fuse", "Low voltage", "High current",
+            "ESC overheated", "Motor overheated", "Battery overheated", "HW current fuse",
+            "HW overvoltage/undervoltage","Pulse current"]
+    elif test == 'testbench':
+        df.columns = [
+            "Unknown0","Time_sms","VOLTAGE (V)", "CURRENT (A)", "SPEED Wrong","SPEED (rpm)",
+            "TEMPERATURE (C)", "Peak current", "Battery internal voltage",
+            "Main bus voltage", "Input request","POWER (W)",
+            "Unknown1", "Unknown2", "Unknown3", "Unknown4",
+            "Unknown5", "Unknown6", "Unknown7", "Unknown8",
+            "Unknown9", "Unknown10", "Unknown11", "Unknown12",
+            "Unknown13", "Pulse current"]
+        
+            
     if cols is not None:
         df.columns = cols
     
@@ -36,7 +48,22 @@ if __name__=="__main__":
     # filename = "Telem ESC 01_2025.csv"
     filename = "prueba 4.csv"
 
-    df_Arc,df_Arc_sorted  = readArc_csv(filename)
+    df_Arc,df_Arc_sorted  = readArc_csv(filename, test = 'testbench')
+    # parmPlot = ["TEMPERATURE (C)", "BEC Temperature", "Motor Temperature", "Battery Temperature"]        
+    # function.plotData(df= df_Arc,
+    #              x_parm = 'time (s)',
+    #              y_parms= parmPlot,
+    #              n_rows = 2,
+    #              title = 'Raw Data',
+    #              plot_type='dot')
+    # parmPlot=["Input request (%)","POWER (W)", "Cruising"]
+    # function.plotData(df= df_Arc,
+    #              x_parm = 'time (s)',
+    #              y_parms= parmPlot,
+    #              n_rows = 1,
+    #              title = 'Raw Data',
+    #              plot_type='dot')
+    
     parmPlot = ["SPEED (rpm)", "POWER (W)", "CURRENT (A)", "VOLTAGE (V)"]        
     function.plotData(df= df_Arc,
                  x_parm = 'time (s)',
@@ -53,8 +80,8 @@ if __name__=="__main__":
     
     x_param = 'SPEED (rpm)'
     y_params = ["POWER (W)","CURRENT (A)"]
-    expan_factor = 0.02
-    curveTofit = "3D"
+    expan_factor = 0.01
+    curveTofit = "4D"
     # x_new = np.linspace(0, 18000,18001)
     x_new = None
     bound_max_all_3D, bound_min_all_3D,coef_max, coef_min,params = function.boundary_curve(df_Arc_sorted,x_param,y_params,x_new, expan_factor,curveTofit)
@@ -78,7 +105,7 @@ if __name__=="__main__":
                                                       coef_max, coef_min,
                                                       params,
                                                       label = 'ARC Defence',
-                                                      typef='3D')
+                                                      typef=curveTofit)
     axes21 = axes2.flatten()
     axes21[0].scatter([speed,speed],[p_max_mts,p_min_mts],s = 50, color= 'orange', edgecolor = "black")
     axes21[0].axvline(speed, linestyle = '--', label= f'@{speed}rpm')
