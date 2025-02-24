@@ -177,7 +177,7 @@ if __name__ =='__main__':
     df_moteus, df_moteus_sorted = Moteus.process_csv_files(filenames)
     
     Power_MoteusVsARC(df_Arc_sorted, df_moteus_sorted, expan_factor = 0.01, curveTofit = "3D")
-    ARC, Moteus = MoteusVsARC_predictions(df_Arc_sorted, df_moteus_sorted, speed= 15000 ,expan_factor = 0.01, curveTofit = "3D")
+    ARC, Moteus = MoteusVsARC_predictions(df_Arc_sorted, df_moteus_sorted, speed= 14000 ,expan_factor = 0.01, curveTofit = "3D")
 
     _,_, coef_max_Moteus, coef_min_Moteus,params_Moteus = function.boundary_curve(df_moteus_sorted[0],
                                                                              x_param= 'SPEED (rpm)',
@@ -186,7 +186,7 @@ if __name__ =='__main__':
                                                                              expan_factor = 0.01,
                                                                              curveTofit = '3D')
     
-    speedList, p_max_Moteus, p_min_Moteus,p_mean_Moteus= function.valueSpeedlist(speed = list(np.linspace(0, 15000,15001)),
+    speedList, p_max_Moteus, p_min_Moteus,p_mean_Moteus= function.valueSpeedlist(speed = list(np.linspace(0, 16000,16001)),
                                                    parameter='POWER (W)',
                                                    coef_max=coef_max_Moteus,
                                                    coef_min=coef_min_Moteus,
@@ -199,26 +199,40 @@ if __name__ =='__main__':
                                                                              x_new = None,
                                                                              expan_factor = 0.01,
                                                                              curveTofit = '3D')
-    speedList, p_max_Arc, p_min_Arc,p_mean_Arc= function.valueSpeedlist(speed = list(np.linspace(0, 15000,15001)),
+    speedList, p_max_Arc, p_min_Arc,p_mean_Arc= function.valueSpeedlist(speed = list(np.linspace(0, 16000,16001)),
                                                    parameter='POWER (W)',
                                                    coef_max=coef_max_Arc,
                                                    coef_min=coef_min_Arc,
                                                    params=["POWER (W)"],
                                                    typef='3D')
     
-    plt.figure()
-    plt.plot(speedList,p_mean_Moteus)
-    plt.plot(speedList,p_mean_Arc)
     
-    
-    xx=[]
+    max_percent, min_percent, mean_percent=[], [], []
+    speedList = speedList[1:]
+    p_mean_Arc = p_mean_Arc[1:]
+    p_mean_Moteus = p_mean_Moteus[1:]
     for i, v in enumerate(speedList):
-        if p_mean_Arc[i] ==0:
-            x=0
-        else:
-            x = (p_mean_Arc[i]-p_mean_Moteus[i]) /p_mean_Arc[i]*100
-        xx.append(x)
+
+        mean_p = (p_mean_Arc[i]-p_mean_Moteus[i]) /p_mean_Arc[i]*100
+        mean_percent.append(mean_p)
         
+    fig, axes = plt.subplots(1,2,figsize=(15,8))
+    axes = np.ravel([axes])
+    fig.tight_layout(pad=6.0)
+
+    axes[0].plot(speedList,p_mean_Moteus, label = 'New Controller', color = "#9e0012ff",lw = 3)
+    axes[0].plot(speedList,p_mean_Arc, label= 'ARC Board',color = "#0F3878", lw = 3)
+    axes[0].set_xlabel('Speed(rpm)')
+    axes[0].set_ylabel('Mean Power Consumption (W)')
+    axes[0].legend()
+    axes[0].grid()
+
+    
+    
+
         
-    plt.plot (xx)
+    axes[1].plot (speedList,mean_percent, color = "#00d0b8", lw = 3)
+    axes[1].set_xlabel('Speed(rpm)')
+    axes[1].set_ylabel('Power Consumption Improvment % (W)')
+    axes[1].grid()
     
