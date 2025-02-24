@@ -121,6 +121,17 @@ def valueSpeed(speed, parameter, coef_max, coef_min,params,label, typef):
     print(f"max: {p_max_mts}")
     return speed, p_max_mts, p_min_mts
 
+def valueSpeedlist(speed, parameter, coef_max, coef_min,params, typef):
+    par_indx = params.index(parameter)
+    p_max, p_min, p_mean = [],[],[]
+    for i, v in enumerate(speed):
+        p_max_mts = funcToFit(typef,v,coef_max[par_indx])
+        p_min_mts = funcToFit(typef, v,coef_min[par_indx])
+        p_mean_mts = (p_max_mts+p_min_mts)/2
+        p_max.append(p_max_mts)
+        p_min.append(p_min_mts)
+        p_mean. append(p_mean_mts)
+    return speed, p_max, p_min,p_mean
 def plotData(df,
              x_parm,
              y_parms= ['SPEED (rpm)', 'CURRENT (A)'],
