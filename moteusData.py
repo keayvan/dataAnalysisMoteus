@@ -110,7 +110,7 @@ if __name__=="__main__":
                                                       label = 'New Controller',
                                                       typef='3D')
     
-    fig2, axes2 = plt.subplots(3, 1, figsize=(20, 14))
+    fig2, axes2 = plt.subplots(3, 1, figsize=(10, 8))
     
     function.plotData(df= df_sorted[0],
                  x_parm = 'SPEED (rpm)',

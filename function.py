@@ -156,7 +156,7 @@ def plotData(df,
         "turquoise": "#00d0b8",
         "sky_blue": "#0FAAF0",
         "red": "#f74242ff",
-        "orange": "#f7941df",
+        "orange": "#f7941d",
         "navy_blue": "#0F3878",
         "dark_red": "#9e0012ff",
         "black": "black"}

@@ -172,51 +172,53 @@ if __name__ =='__main__':
     filename = "prueba 4.csv"
     # filename = "Telem ESC 01_2025.csv"
     filenames = ['KPKIV38'] 
-    
+    curvefit = '3D'
     df_Arc,df_Arc_sorted  = ARC.readArc_csv(filename,  test = 'testbench')
     df_moteus, df_moteus_sorted = Moteus.process_csv_files(filenames)
     
-    Power_MoteusVsARC(df_Arc_sorted, df_moteus_sorted, expan_factor = 0.01, curveTofit = "3D")
-    ARC, Moteus = MoteusVsARC_predictions(df_Arc_sorted, df_moteus_sorted, speed= 14000 ,expan_factor = 0.01, curveTofit = "3D")
+    Power_MoteusVsARC(df_Arc_sorted, df_moteus_sorted, expan_factor = 0.01, curveTofit = curvefit)
+    ARC, Moteus = MoteusVsARC_predictions(df_Arc_sorted, df_moteus_sorted, speed= 14000 ,expan_factor = 0.01, curveTofit = "4D")
 
     _,_, coef_max_Moteus, coef_min_Moteus,params_Moteus = function.boundary_curve(df_moteus_sorted[0],
                                                                              x_param= 'SPEED (rpm)',
                                                                              y_params = ['POWER (W)'],
                                                                              x_new = None,
                                                                              expan_factor = 0.01,
-                                                                             curveTofit = '3D')
+                                                                             curveTofit =curvefit)
     
     speedList, p_max_Moteus, p_min_Moteus,p_mean_Moteus= function.valueSpeedlist(speed = list(np.linspace(0, 16000,16001)),
                                                    parameter='POWER (W)',
                                                    coef_max=coef_max_Moteus,
                                                    coef_min=coef_min_Moteus,
                                                    params=["POWER (W)"],
-                                                   typef='3D')
+                                                   typef=curvefit)
     
     _,_, coef_max_Arc, coef_min_Arc,params_Moteus = function.boundary_curve(df_Arc_sorted,
                                                                              x_param= 'SPEED (rpm)',
                                                                              y_params = ['POWER (W)'],
                                                                              x_new = None,
                                                                              expan_factor = 0.01,
-                                                                             curveTofit = '3D')
+                                                                             curveTofit = curvefit)
     speedList, p_max_Arc, p_min_Arc,p_mean_Arc= function.valueSpeedlist(speed = list(np.linspace(0, 16000,16001)),
                                                    parameter='POWER (W)',
                                                    coef_max=coef_max_Arc,
                                                    coef_min=coef_min_Arc,
                                                    params=["POWER (W)"],
-                                                   typef='3D')
+                                                   typef=curvefit)
     
     
-    max_percent, min_percent, mean_percent=[], [], []
+    diffMeanP, mean_percent=[], []
     speedList = speedList[1:]
     p_mean_Arc = p_mean_Arc[1:]
     p_mean_Moteus = p_mean_Moteus[1:]
     for i, v in enumerate(speedList):
 
         mean_p = (p_mean_Arc[i]-p_mean_Moteus[i]) /p_mean_Arc[i]*100
+        diffMeanP0 = (p_mean_Arc[i]-p_mean_Moteus[i])
         mean_percent.append(mean_p)
+        diffMeanP.append(diffMeanP0)
         
-    fig, axes = plt.subplots(1,2,figsize=(15,8))
+    fig, axes = plt.subplots(1,3,figsize=(15,5))
     axes = np.ravel([axes])
     fig.tight_layout(pad=6.0)
 
@@ -228,11 +230,14 @@ if __name__ =='__main__':
     axes[0].grid()
 
     
-    
+    axes[1].plot (speedList,diffMeanP, color = "#525252ff", lw = 3)
+    axes[1].set_xlabel('Speed(rpm)')
+    axes[1].set_ylabel('Power difference (W)')
+    axes[1].grid()
 
         
-    axes[1].plot (speedList,mean_percent, color = "#00d0b8", lw = 3)
-    axes[1].set_xlabel('Speed(rpm)')
-    axes[1].set_ylabel('Power Consumption Improvment % (W)')
-    axes[1].grid()
+    axes[2].plot (speedList,mean_percent, color = "#00d0b8", lw = 3)
+    axes[2].set_xlabel('Speed(rpm)')
+    axes[2].set_ylabel('Power Consumption Improvment %')
+    axes[2].grid()
     
