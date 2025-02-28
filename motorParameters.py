@@ -101,3 +101,31 @@ for k in range(len(files)):
         ax[i].set_title(columns[i])
        
     plt.show()
+    
+    
+
+
+def phseToWinding(R_phase,connection):
+    if connection == 'Delta':
+        R_winding = 2/3*R_phase
+    elif connection =='Star':
+        R_winding = R_phase*2
+    print('***********************')     
+    print (f'R_winding_{connection}: {R_winding}')
+    return R_winding
+
+def windingToPhase(R_winding,connection):
+    if connection == 'Delta':
+        R_phase = 3/2*R_winding
+    elif connection =='Star':
+        R_phase = R_winding/2
+    print('***********************')     
+    print (f'R_phase_{connection}: {R_phase}')
+    return R_phase
+     
+connection = 'Delta'
+R_phase = 3.6286201999999995e-06
+R_winding = phseToWinding(R_phase,connection)
+
+connection = 'Star'
+R_phase = windingToPhase(R_winding,connection)
