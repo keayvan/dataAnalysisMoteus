@@ -11,9 +11,14 @@ import chardet
 import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
-motor = 'motor2'
+motor = 'motor01/'
+tstNo = 'test04/'
+fldr =  'L_measurment_LCR_28Feb2025/'
+# fldr =  ''
+
 file_path = './data/motorParameters/'
-files = [f'RY_{motor}',f'YB_{motor}', f'BR_{motor}'] 
+file_path = file_path+fldr+motor+tstNo
+files = ['RY','YB', 'BR'] 
 
 df_all = []
 for i in range(len(files)):
@@ -71,36 +76,37 @@ for k in range(len(files)):
         ax[i].plot(df_all[k]['Frequency[Hz]'], df_all[k][columns[i]], color= colors[k], lw = 2, label = f'{files[k]}')
         ax[i].grid()
         ax[i].legend()
+        ax[i].set_ylim(0,max_var[i])
         ax[i].set_title(columns[i])
 plt.show()
 
-columns = ['Rs[Ohm]','resistance_theta', 'resistance_sqrt'] 
+# columns = ['Rs[Ohm]','resistance_theta', 'resistance_sqrt'] 
 
-fig, ax = plt.subplots(1,3 , figsize = (10, 5))
-ax = np.ravel([ax])
-for k in range(len(files)):
-    for i in range(len(columns)):
-        ax[i].plot(df_all[k]['Frequency[Hz]'], df_all[k][columns[i]], color= colors[k], lw = 2, label = f'{files[k]}')
-        ax[i].grid()
-        ax[i].legend()
-        ax[i].set_title(columns[i])
+# fig, ax = plt.subplots(1,3 , figsize = (10, 5))
+# ax = np.ravel([ax])
+# for k in range(len(files)):
+#     for i in range(len(columns)):
+#         ax[i].plot(df_all[k]['Frequency[Hz]'], df_all[k][columns[i]], color= colors[k], lw = 2, label = f'{files[k]}')
+#         ax[i].grid()
+#         ax[i].legend()
+#         ax[i].set_title(columns[i])
        
-    plt.show()
+#     plt.show()
     
-columns = ['Ls[H]','calc_inductance'] 
-max_var = [2e-5, 2e-5]
+# columns = ['Ls[H]','calc_inductance'] 
+# max_var = [2e-5, 2e-5]
 
-fig, ax = plt.subplots(1,2 , figsize = (10, 5))
-ax = np.ravel([ax])
-for k in range(len(files)):
-    for i in range(len(columns)):
-        ax[i].plot(df_all[k]['Frequency[Hz]'], df_all[k][columns[i]], color= colors[k], lw = 2, label = f'{files[k]}')
-        ax[i].grid()
-        ax[i].legend()
-        ax[i].set_ylim(0, max_var[i])
-        ax[i].set_title(columns[i])
+# fig, ax = plt.subplots(1,2 , figsize = (10, 5))
+# ax = np.ravel([ax])
+# for k in range(len(files)):
+#     for i in range(len(columns)):
+#         ax[i].plot(df_all[k]['Frequency[Hz]'], df_all[k][columns[i]], color= colors[k], lw = 2, label = f'{files[k]}')
+#         ax[i].grid()
+#         ax[i].legend()
+#         ax[i].set_ylim(0, max_var[i])
+#         ax[i].set_title(columns[i])
        
-    plt.show()
+#    plt.show()
     
     
 
@@ -129,3 +135,4 @@ R_winding = phseToWinding(R_phase,connection)
 
 connection = 'Star'
 R_phase = windingToPhase(R_winding,connection)
+
