@@ -1,4 +1,5 @@
-Frequency range: 4 to 2000 HZ
+Frequency range min: 4 HZ
+Frequency range max: 2000 Hz
 Number of points: 200
 Test Signal: Voltage
 Source Impedance: Low Z 10 Ohm
