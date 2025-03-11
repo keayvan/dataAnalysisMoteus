@@ -11,13 +11,13 @@ import chardet
 import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
-def phseToWinding(R_phase,connection):
+def phseToWinding(R_phase,connection,ty ='R'):
     if connection == 'Delta':
         R_winding = 3/2*R_phase
     elif connection =='Star':
         R_winding = R_phase/2
     print('***********************')     
-    print (f'R_winding_{connection}: {R_winding}')
+    print (f'{ty}_winding_{connection}: {R_winding}')
     return R_winding
 
 def windingToPhase(R_winding,connection):
@@ -37,8 +37,8 @@ fldr =  'L_measurment_LCR_28Feb2025/'
 
 file_path = './data/motorParameters/'
 file_path = file_path+fldr+motor+tstNo
-# files = ['RY','YB', 'BR'] 
-files = ['BR1','BR','BR2'] 
+files = ['RY','YB', 'BR2'] 
+# files = ['BR1','BR','BR2'] 
 
 
 df_all = []
@@ -54,13 +54,13 @@ for i in range(len(files)):
     df['reactance'] = 2*np.pi * df['Frequency[Hz]']*df['Ls[H]'] 
     
     df['resistance_theta'] =  df['Z[Ohm]']*np.cos(df['thetaRad'])
-    df['resistance_sqrt'] =  np.sqrt(df['Z[Ohm]']**2 - df['reactance']**2)
+    # df['resistance_sqrt'] =  np.sqrt(df['Z[Ohm]']**2 - df['reactance']**2)
     
     df['inductance_theta'] =  df['Z[Ohm]']*np.sin(df['thetaRad'])/np.pi/2/df['Frequency[Hz]']
-    df['inductance_sqrt'] =  (np.sqrt(df['Z[Ohm]']**2 -df['R[Ohm]']**2))/np.pi/2/df['Frequency[Hz]']
+    # df['inductance_sqrt'] =  (np.sqrt(df['Z[Ohm]']**2 -df['R[Ohm]']**2))/np.pi/2/df['Frequency[Hz]']
 
-    df['calc_reactance'] = np.sqrt(df['Z[Ohm]']**2-0.0086**2)
-    df['calc_inductance'] = df['calc_reactance']/2/np.pi/df['Frequency[Hz]']
+    # df['calc_reactance'] = np.sqrt(df['Z[Ohm]']**2-0.0086**2)
+    # df['calc_inductance'] = df['calc_reactance']/2/np.pi/df['Frequency[Hz]']
 
     df = df.applymap(lambda x: pd.to_numeric(x, errors='coerce'))
     df_all.append(df)
@@ -111,50 +111,26 @@ for k in range(len(files)):
         ax[i].set_title(columns[i])
 plt.show()
 
-columns = ['R[Ohm]','resistance_theta', 'resistance_sqrt'] 
-
-fig, ax = plt.subplots(1,3 , figsize = (10, 5))
-ax = np.ravel([ax])
-for k in range(len(files)):
-    for i in range(len(columns)):
-        ax[i].plot(df_all[k]['Frequency[Hz]'], df_all[k][columns[i]], color= colors[k], lw = 2, label = f'{files[k]}')
-        ax[i].grid()
-        ax[i].legend()
-        ax[i].set_title(columns[i])
-       
-    plt.show()
     
-columns = ['Ls[H]','inductance_theta', 'inductance_sqrt'] 
-max_var = [1e-5, 1e-5, 1e-5]
-print(f'L_mean: {(result[0]+result[3]+result[6])/3}')
-print(f'R_mean: {(result[1]+result[4]+result[7])/3}')
+L_mean = (result[0]+result[3]+result[6])/3 
+R_mean = (result[1]+result[4]+result[7])/3 
+
+
+print(f'L_mean: {L_mean}')
+print(f'R_mean: {R_mean}')
+
 print(f'error_YB:{((result[0]+result[3]+result[6])/3-result[0])/result[0]*100}')
 print(f'error_RY:{((result[0]+result[3]+result[6])/3-result[3])/result[3]*100}')
 print(f'error_BR:{((result[0]+result[3]+result[6])/3-result[6])/result[6]*100}')
 
 
-
-fig, ax = plt.subplots(1,3 , figsize = (10, 5))
-ax = np.ravel([ax])
-for k in range(len(files)):
-    for i in range(len(columns)):
-        ax[i].plot(df_all[k]['Frequency[Hz]'], df_all[k][columns[i]], color= colors[k], lw = 2, label = f'{files[k]}')
-        ax[i].grid()
-        ax[i].legend()
-        ax[i].set_ylim(0,max_var[i])
-        ax[i].set_title(columns[i])
-       
-    plt.show()
-    
-    
-
-
-
      
 connection = 'Delta'
-R_phase = 2.2447823000000003e-06
-R_winding = phseToWinding(R_phase,connection)
+R_phase = R_mean
+R_winding = phseToWinding(R_phase,connection,ty='R')
 
-connection = 'Star'
-R_phase = windingToPhase(R_winding,connection)
+L_phase = L_mean
+R_winding = phseToWinding(L_phase,connection,ty='L')
+
+
 
